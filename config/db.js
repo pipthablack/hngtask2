@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 // Access and log the MONGO_URI
-console.log('MONGO_URI:', process.env.MONGO_URI);
+
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.MONGO_URI,{
+        const conn = await mongoose.connect('mongodb+srv://crudappnew:chinonso@cluster0.txfnlpu.mongodb.net',{
             useNewUrlParser: true,
             useUnifiedTopology: true,
             
