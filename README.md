@@ -93,8 +93,8 @@ must return status 200 after deleting updated user name.
 
 To test creating a new person, you can use the following Postman script:
 
-//  To create a new person
-pm.sendRequest({
+// To create a new person
+ pm.sendRequest({
     url: pm.environment.get('base_url') + '/person',
     method: 'POST',
     header: 'Content-Type: application/json',
