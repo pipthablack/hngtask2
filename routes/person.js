@@ -3,73 +3,72 @@ const router = express.Router();
 const Person = require('../model.js')
 
 // Get all persons
-router.get('/person/getall',async (req,res)=>{
-   Person.find({},(err,data)=>{
-    if(!err) {
-        res.send(data);
-    } else {
-        console.log(err)
+router.post('/person', async (req, res) => {
+    try {
+      const person = new Person(req.body);
+      
+      await person.save();
+      res.status(201).json(person);
+    } catch (error) {
+      res.status(400).json({ error: 'Failed to create person' });
     }
-   });
+  });
 
-});
-
- // get single person 
-router.get('/person/getbyid/:id',async (req,res)=>{
-    Person.findById(req.params.id,(err,data)=>{
-        if(!err) {
-            res.send(data);
-        }
-        else { 
-            console.log(err)
-        }
-    });
-})
-
-
-   // save person
-
-router.post('/person/add',(req,res)=>{
-      const person= new Person({
-        name:req.body.name
+  //get all persons
+  
+  router.get('/persons/:name', async (req, res) => {
+    try {
+      const people = await Person.find({ name:req.params.name});
+      if(people.length==0) {
+      return res.status(404).json({ error: 'Person not found' })
+      }
+      res.status(200).json(people);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get person' });
+    }
+  });
+  
+  // Get a single person by ID
+  router.get('/person/:name', async (req, res) => {
+    try {
+        const name = req.params.name
+      const person = await Person.findByName(name);
+      if (!person) {
+        return res.status(404).json({ error: 'Person not found' });
+      }
+      res.status(200).json(person);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get person' });
+    }
+  });
+  
+  // Update a person by ID
+  router.put('/person/:name', async (req, res) => {
+    try {
+      const person = await Person.findOneAndUpdate( { name:req.params.name }, req.body, {
+        new: true,
       });
-      person.save((err,data)=>{
-        if(!err){
-            //res.send(data);
-        res.status(200).json(data);
-    }else {
-        console.log(err)
+      
+      if (!person) {
+        return res.status(404).json({ error: 'Person not found' });
+      }
+      res.status(200).json(person);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update person' });
     }
-    });
-})
-
-// update person 
-router.put('/person/update/:id',(req,res)=>{
-    const per = {
-        name: req.body.name
-    };
-    Person.findByIdAndUpdate(req.params.id,per,(err,data)=>{
-        if(!err) {
-            res.status(200).json(data);
-        } else {
-            console.log(err)
-        }
-       });
-     })
-
-
-
-     // delete person
-
-    router.delete('/person/delete/:id',(req,res)=>{
-        Person.findByIdAndDelete(req.params.id,(err,data)=>{
-            if(!err) {
-                res.status(200).json(data);
-            } else {
-                console.log(err)
-            }
-           });
-        
-        })  
+  });
+  
+  // Delete a person by ID
+  router.delete('/person/:name', async (req, res) => {
+    try {
+      const person = await Person.findOneAndRemove({ name:req.params.name });
+      if (!person) {
+        return res.status(404).json({ error: 'Person not found' });
+      }
+      res.status(200).send("user deleted successfully");
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to delete person' });
+    }
+  });
 
 module.exports= router;

@@ -5,8 +5,14 @@ const schema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
   
+  email : { 
+    type: String,
+    required: true,
+    unique: true,
+  },
   
   // Add other fields as needed
 },{
